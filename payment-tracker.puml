@@ -1,0 +1,18 @@
+@startuml
+== input file execution ==
+User -> PaymentTrackerApplication: input payment file
+PaymentTrackerApplication -> InputParser: parse payment input file
+InputParser --> PaymentTrackerApplication: payments
+PaymentTrackerApplication -> TransactionLedgerService: add payments
+TransactionLedgerService -> PaymentTrackerApplication: payments added
+== command-line input execution ==
+User -> PaymentTrackerApplication: insert payment item
+PaymentTrackerApplication -> InputParser: parse payment input item
+InputParser --> PaymentTrackerApplication: payment
+PaymentTrackerApplication -> TransactionLedgerService: add payment
+TransactionLedgerService -> PaymentTrackerApplication: payment added
+== output execution ==
+TransactionLedgerOutput -> TransactionLedgerService: get transaction ledger
+TransactionLedgerService -> TransactionLedgerOutput: transaction ledger
+TransactionLedgerOutput -> User: output
+@enduml
