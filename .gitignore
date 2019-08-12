@@ -1,0 +1,10 @@
+.gradle
+build/
+# download gradle-wrapper.jar by IDE
+gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### IntelliJ IDEA ###
+.idea
+out/

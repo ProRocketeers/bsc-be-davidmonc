@@ -1,0 +1,30 @@
+plugins {
+  id 'java'
+}
+
+group = theGroup
+version = theVersion
+sourceCompatibility = theSourceCompatability
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// to be able to run: `./gradlew run --args='sample-input'`
+apply plugin:'application'
+mainClassName = theMainClass
+
+// creates fat jar, allows to run: `java -jar payment-tracker-0.0.1.jar sample-input`
+jar {
+  manifest {
+    attributes 'Main-Class': theMainClass
+  }
+
+  from {
+    configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+}
