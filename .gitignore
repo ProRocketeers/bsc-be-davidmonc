@@ -1,7 +1,7 @@
 .gradle
 build/
-# download gradle-wrapper.jar by IDE
-gradle/wrapper/gradle-wrapper.jar
+# to be able to build this project
+!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
 
