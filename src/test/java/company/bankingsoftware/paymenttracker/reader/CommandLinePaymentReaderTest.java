@@ -29,7 +29,7 @@ public class CommandLinePaymentReaderTest {
     }
 
     @Test
-    public void readCommandLineIput_withQuitCommand_shouldNotParseAnythingAndShouldQuit() {
+    public void readCommandLineInput_withQuitCommand_shouldNotParseAnythingAndShouldQuit() {
         InputStream inputStream = new ByteArrayInputStream(QUIT_COMMAND.getBytes());
 
         commandLinePaymentReader = new CommandLinePaymentReader(paymentParserMock, inputStream);

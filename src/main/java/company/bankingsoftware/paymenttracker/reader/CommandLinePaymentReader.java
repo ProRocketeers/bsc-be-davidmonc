@@ -18,13 +18,11 @@ public class CommandLinePaymentReader implements PaymentReader {
         this.inputStream = inputStream;
     }
 
-    public void readCommandLineInput(){
+    public void readCommandLineInput() {
         Scanner scanner = new Scanner(inputStream);
 
         for (String commandLineInput; scanner.hasNext() && !QUIT_COMMAND.equals(commandLineInput = scanner.nextLine());) {
             paymentParser.toPayment(commandLineInput);
         }
     }
-
-
 }
