@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.text.ParseException;
 
 public class FilePaymentReaderTest {
 
@@ -32,7 +33,7 @@ public class FilePaymentReaderTest {
     }
 
     @Test
-    public void readFileInput_withNonExistingFile_shouldSkipFile() {
+    public void readFileInput_withNonExistingFile_shouldSkipFile() throws ParseException {
         filePaymentReader = new FilePaymentReader(paymentParserMock, Paths.get(NOT_EXISTING_FILE), errorStreamMock);
 
         filePaymentReader.readFileInput();
@@ -43,7 +44,7 @@ public class FilePaymentReaderTest {
     }
 
     @Test
-    public void readFileInput_withEmptyFile_shouldSkipFile() throws URISyntaxException {
+    public void readFileInput_withEmptyFile_shouldSkipFile() throws URISyntaxException, ParseException {
         filePaymentReader =
                 new FilePaymentReader(
                         paymentParserMock,
@@ -58,7 +59,7 @@ public class FilePaymentReaderTest {
     }
 
     @Test
-    public void readFileInput_withEmptyLines_shouldSkipEmptyLines() throws URISyntaxException {
+    public void readFileInput_withEmptyLines_shouldSkipEmptyLines() throws URISyntaxException, ParseException {
         filePaymentReader =
                 new FilePaymentReader(
                         paymentParserMock,
@@ -73,7 +74,7 @@ public class FilePaymentReaderTest {
     }
 
     @Test
-    public void readFileInput_withValidLines_shouldParseValidLines() throws URISyntaxException {
+    public void readFileInput_withValidLines_shouldParseValidLines() throws URISyntaxException, ParseException {
         filePaymentReader =
                 new FilePaymentReader(
                         paymentParserMock,
@@ -88,7 +89,7 @@ public class FilePaymentReaderTest {
     }
 
     @Test
-    public void readFileInput_withInvalidLines_shouldParseInvalidLines() throws URISyntaxException {
+    public void readFileInput_withInvalidLines_shouldParseInvalidLines() throws URISyntaxException, ParseException {
         filePaymentReader =
                 new FilePaymentReader(
                         paymentParserMock,
@@ -103,7 +104,7 @@ public class FilePaymentReaderTest {
     }
 
     @Test
-    public void readFileInput_withQuitLine_shouldParseQuitLineAndNotQuit() throws URISyntaxException {
+    public void readFileInput_withQuitLine_shouldParseQuitLineAndNotQuit() throws URISyntaxException, ParseException {
         filePaymentReader =
                 new FilePaymentReader(
                         paymentParserMock,

@@ -62,12 +62,13 @@ HKD 300 (USD 38.62)
 ### Assumptions
 As I was not able to clarify requirements, bellow is list of assumptions I made while I have analyzed/implemented Payment Tracker
 * Parsing of input
-  * parser implementation skips all wrong input lines as validation is turned off => without any other action or error
-  * valid amount can have maximum 2 digits to the right of decimal point, valid are `200, 200.0, 200.00`
+  * parser implementation skips all invalid input lines with parse exception (and Payment Tracker continues)
+  * any other characters before currency and after amount is invalid payment line with parse exception
+  * valid amount can have maximum 2 digits to the right of decimal point, valid are `200, 200.0, 200.00` and invalid is `200.`
   * valid amount must have minimum 1 digit to the left of decimal point, valid are `2, 2.0, 2.00` and invalid are `., .0, .00`
-  * not existing file will be skipped with an non existing file error and command line input will continue
-  * binary files as input are not supported
-  * empty file will be skipped without any error and command line input will continue
+  * not existing file will be ignored with an non existing file exception and command line input will continue
+  * binary file as input file are not supported
+  * empty file will be ignored without any error and command line input will continue
   * empty line(s) in file will be skipped and processing will continue with next line (above assumptions are considered for next line(s))
 * Output will come every 60th seconds after run of the program
 

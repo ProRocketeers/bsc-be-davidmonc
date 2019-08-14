@@ -1,9 +1,12 @@
 package company.bankingsoftware.paymenttracker.reader;
 
+import company.bankingsoftware.paymenttracker.model.Payment;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.stream.Stream;
 
 /**
@@ -25,12 +28,23 @@ public class FilePaymentReader implements PaymentReader {
         try (Stream<String> stream = Files.lines(path)) {
 
             stream
-                    .filter(line -> !line.isEmpty())
-                    .forEach(line -> paymentParser.toPayment(line));
+                    .filter(paymentLine -> !paymentLine.isEmpty())
+                    .forEach(paymentLine -> parsePayment(paymentLine));
 
         } catch (IOException ioe ) {
             errorStream.println(ioe.getLocalizedMessage());
             errorStream.flush();
         }
+    }
+
+    Payment parsePayment(String paymentLine) {
+        try {
+            return paymentParser.toPayment(paymentLine);
+        } catch (ParseException pe) {
+            errorStream.println(pe.getLocalizedMessage());
+            errorStream.flush();
+        }
+
+        return null;
     }
 }
