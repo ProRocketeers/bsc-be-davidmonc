@@ -2,8 +2,12 @@
 
 * [HOMEWORK FOR BACKEND DEVELOPER POSITION IN BSC](#homework-for-backend-developer-position-in-bsc)
   + [Exercises - Payment Tracker](#exercises---payment-tracker)
-  + [Detailed requirements](#detailed-requirements)
-  + [Optional bonus question](#optional-bonus-question)
+    + [Detailed requirements](#detailed-requirements)
+    + [Optional bonus question](#optional-bonus-question)
+  + [Solution](#solution)
+    + [Assumptions](#assumptions)
+    + [Build the Payment Tracker](#build-the-payment-tracker)
+    + [Run the Payment Tracker](#run-the-payment-tracker)
 
 ## HOMEWORK FOR BACKEND DEVELOPER POSITION IN BSC
 The submitted code should be of the quality we can expect during a normal working week. Using maven or ant is not a requirement; however candidates are welcome to do so. Candidates should provide instructions on how to run the application from the command line. As candidates will not have the opportunity to clarify requirements, they are advised to note any assumptions in their submission. However candidates are welcome to use any external libraries necessary to complete the tasks it is not important to include big number of libraries and platforms “just to demonstrate I can use them”. Code should be as clear and effective as possible. 
@@ -52,3 +56,26 @@ USD 900
 RMB 2000 (USD 314.60)
 HKD 300 (USD 38.62)
 ```
+
+## Solution
+
+### Assumptions
+As I was not able to clarify requirements, bellow is list of assumtions I made while I have analyzed issues
+* Parsing of input
+  * parser implementation skips all wrong input lines as validation is turned off => without any other action or error
+  * valid amount can have maximum 2 digits to the right of decimal point, valid are `200, 200.0, 200.00`
+  * not existing file will be skipped with an error and command line input will continue
+  * not readable file will be skipped with an error and command line input will continue
+  * empty file will be skipped without any error and command line input will continue
+  * empty line in file will be skipped and processing will continue with next line (above assumptions are considered for next line)
+* Output will come every 60th seconds after run of the program
+
+### Build the Payment Tracker
+`./gradlew build`
+
+### Run the Payment Tracker
+`java -jar payment-tracker-0.0.1.jar sample-input`
+
+or
+
+`./gradlew run --args='sample-input'`
