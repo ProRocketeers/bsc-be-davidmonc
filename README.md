@@ -80,11 +80,20 @@ As I was not able to clarify requirements, bellow is list of assumptions I made 
     * 2 when at least one payment has 2 digits to the right of decimal point (for ex. `10 + 10.00 = 20.00`)
 
 ### Build the Payment Tracker
+Payment Tracker is written in JDK 12 and gradle java project management. Gradle wrapper is included, to be able to build this project
+here is the command:
+
 `./gradlew build`
 
 ### Run the Payment Tracker
+With JRE 12, the Payment Tracker can be run with:
+
 `java -jar payment-tracker-0.0.1.jar sample-input`
 
+(payment-tracker-0.0.1.jar is copied to root of the project, so it can be run without building, sample-input file is also included
+into root project as an example of input file)
 or
 
 `./gradlew run --args='sample-input'`
+
+(gradle way how to run the project from the root of project or by IDE)
