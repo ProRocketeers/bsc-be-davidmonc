@@ -27,6 +27,12 @@ public class ExecutorHandler {
 
     private static final Logger LOGGER = Logger.getLogger(ExecutorHandler.class.getName());
 
+    private static final int PAYMENT_READER_POOL_SIZE = 3;
+    private static final int INPUT_PAYMENT_EVENTS_QUEUE_SIZE = 50;
+    private static final int OUTPUT_TRANSACTION_LEDGER_QUEUE_SIZE = 20;
+    private static final int TRANSACTION_LEDGER_TIMEOUT = 10;
+    private static final int SCHEDULER_DELAY = 60;
+
     private final Path path;
     private final ExecutorService paymentReaderExecutorService;
     private final BlockingQueue<PaymentEvent> inputPaymentEventsQueue;
@@ -45,9 +51,9 @@ public class ExecutorHandler {
         this.path = filePath != null && !filePath.isEmpty() ? Paths.get(filePath) : null;
         LOGGER.setLevel(logLevel);
 
-        paymentReaderExecutorService = Executors.newFixedThreadPool(3);
-        inputPaymentEventsQueue = new ArrayBlockingQueue<>(50);
-        outputTransactionLedgerQueue = new ArrayBlockingQueue<>(20);
+        paymentReaderExecutorService = Executors.newFixedThreadPool(PAYMENT_READER_POOL_SIZE);
+        inputPaymentEventsQueue = new ArrayBlockingQueue<>(INPUT_PAYMENT_EVENTS_QUEUE_SIZE);
+        outputTransactionLedgerQueue = new ArrayBlockingQueue<>(OUTPUT_TRANSACTION_LEDGER_QUEUE_SIZE);
         schedulerExecutorService = Executors.newSingleThreadScheduledExecutor();
 
         if (path != null) {
@@ -89,8 +95,8 @@ public class ExecutorHandler {
 
         Future<?> queueSchedulerTask = schedulerExecutorService.scheduleWithFixedDelay(
                 this.queueSchedulerTask,
-                15,
-                15,
+                SCHEDULER_DELAY,
+                SCHEDULER_DELAY,
                 TimeUnit.SECONDS
         );
 
@@ -118,7 +124,7 @@ public class ExecutorHandler {
 
         try {
             LOGGER.log(Level.INFO, "Force SHUTDOWN.");
-            inMemoryTransactionLedgerService.get(10, TimeUnit.SECONDS);
+            inMemoryTransactionLedgerService.get(TRANSACTION_LEDGER_TIMEOUT, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException ex) {
             inMemoryTransactionLedgerService.cancel(true);
         }
