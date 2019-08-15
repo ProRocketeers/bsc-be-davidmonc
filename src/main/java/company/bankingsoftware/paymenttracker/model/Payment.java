@@ -2,6 +2,9 @@ package company.bankingsoftware.paymenttracker.model;
 
 import java.math.BigDecimal;
 
+/**
+ * Currency and amount couple.
+ */
 public class Payment {
 
     private final String currency;
