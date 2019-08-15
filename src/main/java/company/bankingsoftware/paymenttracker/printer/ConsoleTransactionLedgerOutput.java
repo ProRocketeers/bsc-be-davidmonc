@@ -1,4 +1,4 @@
-package company.bankingsoftware.paymenttracker.service;
+package company.bankingsoftware.paymenttracker.printer;
 
 import company.bankingsoftware.paymenttracker.model.TransactionLedger;
 

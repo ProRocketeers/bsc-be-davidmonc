@@ -5,7 +5,7 @@ import company.bankingsoftware.paymenttracker.model.TransactionLedger;
 import company.bankingsoftware.paymenttracker.reader.CommandLinePaymentReader;
 import company.bankingsoftware.paymenttracker.reader.FilePaymentReader;
 import company.bankingsoftware.paymenttracker.reader.RegexPaymentParser;
-import company.bankingsoftware.paymenttracker.service.ConsoleTransactionLedgerOutput;
+import company.bankingsoftware.paymenttracker.printer.ConsoleTransactionLedgerOutput;
 import company.bankingsoftware.paymenttracker.service.InMemoryTransactionLedgerService;
 import company.bankingsoftware.paymenttracker.service.QueueSchedulerTask;
 

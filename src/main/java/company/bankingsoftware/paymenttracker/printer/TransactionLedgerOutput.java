@@ -1,4 +1,4 @@
-package company.bankingsoftware.paymenttracker.service;
+package company.bankingsoftware.paymenttracker.printer;
 
 /**
  * Interface for transaction ledger output.

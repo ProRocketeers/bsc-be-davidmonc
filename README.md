@@ -78,6 +78,7 @@ As I was not able to clarify requirements, bellow is list of assumptions I made 
     * 0 when only integers are added (for ex. `10 + 10 = 20`)
     * 1 when at least one payment has 1 digit to the right of decimal point (for ex. `10 + 10.0 = 20.0`)
     * 2 when at least one payment has 2 digits to the right of decimal point (for ex. `10 + 10.00 = 20.00`)
+  * there is no order on output
 
 ### Build the Payment Tracker
 Payment Tracker is written in JDK 12 and gradle java project management. Gradle wrapper is included, to be able to build this project
