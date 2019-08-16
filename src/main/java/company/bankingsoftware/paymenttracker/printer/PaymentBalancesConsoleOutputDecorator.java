@@ -13,7 +13,6 @@ import java.util.Map;
 public class PaymentBalancesConsoleOutputDecorator implements PaymentBalancesOutputDecorator {
 
     private static final String FROM_EXCHANGE = "USD";
-    private static final MathContext MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
     private static Map<String, BigDecimal> exchangeRates;
 
     public PaymentBalancesConsoleOutputDecorator() {
@@ -22,6 +21,8 @@ public class PaymentBalancesConsoleOutputDecorator implements PaymentBalancesOut
             put("CZK", BigDecimal.valueOf(0.04));
             put("GBP", BigDecimal.valueOf(1.21));
             put("EUR", BigDecimal.valueOf(1.11));
+            put("RMB", BigDecimal.valueOf(0.14));
+            put("HKD", BigDecimal.valueOf(0.13));
         }});
     }
 
@@ -32,8 +33,9 @@ public class PaymentBalancesConsoleOutputDecorator implements PaymentBalancesOut
             sb.append(currency).append(" ").append(paymentBalances.get(currency));
             if (currency != FROM_EXCHANGE && exchangeRates.get(currency) != null) {
                 BigDecimal multiplyResult = exchangeRates.get(currency).multiply(paymentBalances.get(currency));
-                sb.append(" (USD ").append(multiplyResult.setScale(2, RoundingMode.HALF_UP)).append(")\n");
+                sb.append(" (USD ").append(multiplyResult.setScale(2, RoundingMode.HALF_UP)).append(")");
             }
+            sb.append("\n");
         }
         return sb.toString();
     }
