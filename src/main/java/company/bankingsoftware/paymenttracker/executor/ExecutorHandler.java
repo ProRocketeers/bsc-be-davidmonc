@@ -6,7 +6,7 @@ import company.bankingsoftware.paymenttracker.reader.CommandLinePaymentReader;
 import company.bankingsoftware.paymenttracker.reader.FilePaymentReader;
 import company.bankingsoftware.paymenttracker.reader.RegexPaymentParser;
 import company.bankingsoftware.paymenttracker.printer.ConsoleTransactionLedgerOutput;
-import company.bankingsoftware.paymenttracker.service.InMemoryTransactionLedgerService;
+import company.bankingsoftware.paymenttracker.service.InputOutputTransactionLedgerService;
 import company.bankingsoftware.paymenttracker.service.QueueSchedulerTask;
 
 import java.nio.file.Path;
@@ -23,6 +23,24 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class:
+ * - Initiates payment reader executor service and scheduled executor service.
+ * - Initiates 2 blocking queues - input queue for payment events and output queue with transaction ledger.
+ * - Cleans the futures (by cancel) and executor services (by shutdown command) when the <i>quit</i> (or exit the program) command is triggered
+ *
+ * Producers of <i>ADD payment event type</i> events into input queue are file input reader and command line input reader.
+ * Producer of <i>OUTPUT payment type event</i> is queue scheduler task and it generates events in 60 second intervals.
+ * Producer of <i>SHUTDOWN payment type event</i> is this class (also forces transaction ledger service if graceful ending failed).
+ * Consumer of input queue is transaction ledger service.
+ *
+ * Producer into output queue is transaction ledger service (by consuming input queue).
+ * Consumer of output queue is transaction ledger output.
+
+ * File input reader, command line input reader, transaction ledger service and transaction ledger output
+ * shares the payment reader executor service thread pool.
+ * Queue scheduler task is the only one task in scheduled executor service single thread pool.
+ */
 public class ExecutorHandler {
 
     private static final Logger LOGGER = Logger.getLogger(ExecutorHandler.class.getName());
@@ -39,7 +57,7 @@ public class ExecutorHandler {
     private final BlockingQueue<TransactionLedger> outputTransactionLedgerQueue;
     private final ScheduledExecutorService schedulerExecutorService;
 
-    private final InMemoryTransactionLedgerService inMemoryTransactionLedgerService;
+    private final InputOutputTransactionLedgerService inputOutputTransactionLedgerService;
     private final CommandLinePaymentReader commandLinePaymentReader;
     private final ConsoleTransactionLedgerOutput consoleTransactionLedgerOutput;
 
@@ -60,16 +78,16 @@ public class ExecutorHandler {
             this.filePaymentReader = new FilePaymentReader(path, inputPaymentEventsQueue, new RegexPaymentParser(), logLevel);
         }
 
-        this.inMemoryTransactionLedgerService = new InMemoryTransactionLedgerService(inputPaymentEventsQueue, outputTransactionLedgerQueue, logLevel);
+        this.inputOutputTransactionLedgerService = new InputOutputTransactionLedgerService(inputPaymentEventsQueue, outputTransactionLedgerQueue, logLevel);
         this.commandLinePaymentReader = new CommandLinePaymentReader(System.in, inputPaymentEventsQueue, new RegexPaymentParser(), logLevel);
         this.consoleTransactionLedgerOutput = new ConsoleTransactionLedgerOutput(System.out, outputTransactionLedgerQueue, logLevel);
         this.queueSchedulerTask = new QueueSchedulerTask(inputPaymentEventsQueue, logLevel);
     }
 
     public void handleFutures() {
-        Future<?> inMemoryTransactionLedgerService = paymentReaderExecutorService.submit(this.inMemoryTransactionLedgerService);
+        Future<?> inputOutputTransactionLedgerService = paymentReaderExecutorService.submit(this.inputOutputTransactionLedgerService);
 
-        // to get inMemoryTransactionLedgerService
+        // to get inputOutputTransactionLedgerService
         // to shutdown paymentReaderExecutorService
 
         if (this.filePaymentReader != null) {
@@ -84,12 +102,12 @@ public class ExecutorHandler {
 
         Future<?> commandLinePaymentReader = paymentReaderExecutorService.submit(this.commandLinePaymentReader);
 
-        // to get inMemoryTransactionLedgerService, commandLinePaymentReader
+        // to get inputOutputTransactionLedgerService, commandLinePaymentReader
         // to shutdown paymentReaderExecutorService
 
         Future<?> consoleTransactionLedgerOutput = paymentReaderExecutorService.submit(this.consoleTransactionLedgerOutput);
 
-        // to get inMemoryTransactionLedgerService, commandLinePaymentReader
+        // to get inputOutputTransactionLedgerService, commandLinePaymentReader
         // to cancel consoleTransactionLedgerOutput
         // to shutdown paymentReaderExecutorService
 
@@ -100,7 +118,7 @@ public class ExecutorHandler {
                 TimeUnit.SECONDS
         );
 
-        // to get inMemoryTransactionLedgerService, commandLinePaymentReader
+        // to get inputOutputTransactionLedgerService, commandLinePaymentReader
         // to cancel consoleTransactionLedgerOutput, queueSchedulerTask
         // to shutdown paymentReaderExecutorService, schedulerExecutorService
 
@@ -111,7 +129,7 @@ public class ExecutorHandler {
             commandLinePaymentReader.cancel(true);
         }
 
-        // to get inMemoryTransactionLedgerService
+        // to get inputOutputTransactionLedgerService
         // to cancel consoleTransactionLedgerOutput, queueSchedulerTask
         // to shutdown paymentReaderExecutorService, schedulerExecutorService
 
@@ -124,9 +142,9 @@ public class ExecutorHandler {
 
         try {
             LOGGER.log(Level.INFO, "Force SHUTDOWN.");
-            inMemoryTransactionLedgerService.get(TRANSACTION_LEDGER_TIMEOUT, TimeUnit.SECONDS);
+            inputOutputTransactionLedgerService.get(TRANSACTION_LEDGER_TIMEOUT, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException ex) {
-            inMemoryTransactionLedgerService.cancel(true);
+            inputOutputTransactionLedgerService.cancel(true);
         }
 
         // to cancel consoleTransactionLedgerOutput, queueSchedulerTask

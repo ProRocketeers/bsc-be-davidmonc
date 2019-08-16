@@ -8,16 +8,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class InMemoryTransactionLedgerService implements TransactionLedgerService {
+public class InputOutputTransactionLedgerService implements TransactionLedgerService {
 
-    private static final Logger LOGGER = Logger.getLogger(InMemoryTransactionLedgerService.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(InputOutputTransactionLedgerService.class.getName());
 
     private final BlockingQueue<PaymentEvent> inputPaymentEventsQueue;
     private final BlockingQueue<TransactionLedger> outputTransactionLedgerQueue;
     private final TransactionLedger transactionLedger;
     private boolean running = true;
 
-    public InMemoryTransactionLedgerService(
+    public InputOutputTransactionLedgerService(
             BlockingQueue<PaymentEvent> inputPaymentEventsQueue,
             BlockingQueue<TransactionLedger> outputTransactionLedgerQueue,
             Level logLevel) {
@@ -30,7 +30,7 @@ public class InMemoryTransactionLedgerService implements TransactionLedgerServic
     @Override
     public void run() {
         while (running) {
-                PaymentEvent paymentEvent = getInputPaymentEventsQueue();
+                PaymentEvent paymentEvent = takeInputPaymentEvent();
 
                 if (paymentEvent == null) {
                     continue;
@@ -40,7 +40,7 @@ public class InMemoryTransactionLedgerService implements TransactionLedgerServic
                         addPaymentIntoTransactionLedger(paymentEvent.getPayment());
                         break;
                     case OUTPUT:
-                        outputTransactionLedger();
+                        queueTransactionLedger();
                         break;
                     case SHUTDOWN:
                         running = false;
@@ -49,7 +49,7 @@ public class InMemoryTransactionLedgerService implements TransactionLedgerServic
         }
     }
 
-    private void outputTransactionLedger() {
+    void queueTransactionLedger() {
         try {
             LOGGER.log(Level.INFO, "Output transaction ledger.");
             outputTransactionLedgerQueue.put(transactionLedger);
@@ -58,7 +58,7 @@ public class InMemoryTransactionLedgerService implements TransactionLedgerServic
         }
     }
 
-    public PaymentEvent getInputPaymentEventsQueue() {
+    PaymentEvent takeInputPaymentEvent() {
         try {
             LOGGER.log(Level.INFO, "Waiting for input in payment event queue");
             PaymentEvent paymentEvent = inputPaymentEventsQueue.take();
@@ -70,7 +70,7 @@ public class InMemoryTransactionLedgerService implements TransactionLedgerServic
         }
     }
 
-    void addPaymentIntoTransactionLedger(Payment payment) {
+    private void addPaymentIntoTransactionLedger(Payment payment) {
         LOGGER.log(Level.INFO, "Adding payment into transaction ledger.");
         transactionLedger.addPayment(payment);
     }
