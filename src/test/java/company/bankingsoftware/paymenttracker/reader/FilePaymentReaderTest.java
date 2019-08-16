@@ -132,7 +132,7 @@ public class FilePaymentReaderTest {
         Mockito.when(paymentParserMock.toPayment(USD_1000)).thenReturn(Payment.builder().build());
 
         filePaymentReader = new FilePaymentReader(pathMock, inputPaymentEventsQueueMock, paymentParserMock, Level.OFF);
-        PaymentEvent paymentEvent = filePaymentReader.parsePaymentEvent(USD_1000);
+        final PaymentEvent paymentEvent = filePaymentReader.parsePaymentEvent(USD_1000);
 
         assertThat(paymentEvent, is(notNullValue()));
         assertThat(paymentEvent.getPaymentEventType(), is(PaymentEvent.PaymentEventType.ADD));
@@ -157,16 +157,6 @@ public class FilePaymentReaderTest {
 
     @Test
     public void queue_withNullPaymentEvent_shouldNotInvokePutCall() throws InterruptedException {
-        filePaymentReader = new FilePaymentReader(pathMock, inputPaymentEventsQueueMock, paymentParserMock, Level.OFF);
-        filePaymentReader.queue(null);
-
-        Mockito.verify(inputPaymentEventsQueueMock, Mockito.never()).put(Mockito.any());
-    }
-
-    @Test
-    public void queue_notAbleToPut_shouldNotInvokePutCall() throws InterruptedException {
-        Mockito.doThrow(InterruptedException.class).when(inputPaymentEventsQueueMock).put(PaymentEvent.builder().build());
-
         filePaymentReader = new FilePaymentReader(pathMock, inputPaymentEventsQueueMock, paymentParserMock, Level.OFF);
         filePaymentReader.queue(null);
 

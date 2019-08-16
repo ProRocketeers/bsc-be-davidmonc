@@ -39,7 +39,7 @@ public class CommandLinePaymentReaderTest {
 
     @Test
     public void readCommandLineInput_withQuitCommandOnly_shouldNotParseAnythingAndShouldQuit() throws ParseException {
-        InputStream inputStream = new ByteArrayInputStream(QUIT_COMMAND.getBytes());
+        final InputStream inputStream = new ByteArrayInputStream(QUIT_COMMAND.getBytes());
 
         commandLinePaymentReader = new CommandLinePaymentReader(inputStream, inputPaymentEventsQueueMock, paymentParserMock, Level.OFF);
         commandLinePaymentReader.readCommandLineInput();
@@ -50,7 +50,7 @@ public class CommandLinePaymentReaderTest {
     @Test
     public void readCommandLineInput_withValidPaymentAndQuitCommand_shouldParsePaymentAndShouldQuit() throws ParseException {
         Mockito.when(paymentParserMock.toPayment(USD_1000)).thenReturn(Payment.builder().build());
-        InputStream inputStream = new ByteArrayInputStream(
+        final InputStream inputStream = new ByteArrayInputStream(
                 String.join(System.lineSeparator(), USD_1000, QUIT_COMMAND).getBytes()
         );
 
@@ -63,7 +63,7 @@ public class CommandLinePaymentReaderTest {
     @Test
     public void readCommandLineInput_withInvalidPaymentAndQuitCommand_shouldParsePaymentAndShouldQuit() throws ParseException {
         // This behavior is based on assumption
-        InputStream inputStream = new ByteArrayInputStream(
+        final InputStream inputStream = new ByteArrayInputStream(
                 String.join(System.lineSeparator(), US_1000, QUIT_COMMAND).getBytes()
         );
 
@@ -103,16 +103,6 @@ public class CommandLinePaymentReaderTest {
 
     @Test
     public void queue_withNullPaymentEvent_shouldNotInvokePutCall() throws InterruptedException {
-        commandLinePaymentReader = new CommandLinePaymentReader(inputStreamMock, inputPaymentEventsQueueMock, paymentParserMock, Level.OFF);
-        commandLinePaymentReader.queue(null);
-
-        Mockito.verify(inputPaymentEventsQueueMock, Mockito.never()).put(Mockito.any());
-    }
-
-    @Test
-    public void queue_notAbleToPut_shouldNotInvokePutCall() throws InterruptedException {
-        Mockito.doThrow(InterruptedException.class).when(inputPaymentEventsQueueMock).put(PaymentEvent.builder().build());
-
         commandLinePaymentReader = new CommandLinePaymentReader(inputStreamMock, inputPaymentEventsQueueMock, paymentParserMock, Level.OFF);
         commandLinePaymentReader.queue(null);
 

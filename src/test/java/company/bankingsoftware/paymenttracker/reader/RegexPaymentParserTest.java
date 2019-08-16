@@ -23,28 +23,28 @@ public class RegexPaymentParserTest {
 
     @Test
     public void toPayment_withValidPaymentLine_shouldReturnPayment() throws ParseException {
-        Payment payment = regexPaymentParser.toPayment("USD 1000");
+        final Payment payment = regexPaymentParser.toPayment("USD 1000");
         assertThat(payment.getCurrency(), is("USD"));
         assertThat(payment.getAmount(), is(BigDecimal.valueOf(1000)));
     }
 
     @Test
     public void toPayment_withNegativeValidPaymentLine_shouldReturnPayment() throws ParseException {
-        Payment payment = regexPaymentParser.toPayment("USD -1000");
+        final Payment payment = regexPaymentParser.toPayment("USD -1000");
         assertThat(payment.getCurrency(), is("USD"));
         assertThat(payment.getAmount(), is(BigDecimal.valueOf(-1000)));
     }
 
     @Test
     public void toPayment_withNegativeAndDecimalPointValidPaymentLine_shouldReturnPayment() throws ParseException {
-        Payment payment = regexPaymentParser.toPayment("USD -1000.0");
+        final Payment payment = regexPaymentParser.toPayment("USD -1000.0");
         assertThat(payment.getCurrency(), is("USD"));
         assertThat(payment.getAmount(), is(BigDecimal.valueOf(-1000.0)));
     }
 
     @Test
     public void toPayment_withSmallAmountPaymentLine_shouldReturnPayment() throws ParseException {
-        Payment payment = regexPaymentParser.toPayment("USD 1");
+        final Payment payment = regexPaymentParser.toPayment("USD 1");
         assertThat(payment.getCurrency(), is("USD"));
         assertThat(payment.getAmount(), is(BigDecimal.valueOf(1)));
     }
